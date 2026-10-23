@@ -3,7 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "ShotClockCore",
-    platforms: [.watchOS(.v26), .macOS(.v26)],
+    platforms: [.watchOS("27.0"), .macOS(.v26)],
     products: [
         .library(name: "ShotClockCore", targets: ["ShotClockCore"]),
     ],

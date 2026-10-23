@@ -6,6 +6,9 @@ import WatchKit
 /// max. ~1 h). If this proves unreliable on the device, switch to `HKWorkoutSession`.
 final class RuntimeSession: NSObject {
     private var session: WKExtendedRuntimeSession?
+    /// Invalidated sessions are retained until the system confirms the invalidation;
+    /// releasing them earlier makes WatchKit end them a second time and log errors.
+    private var ending: [WKExtendedRuntimeSession] = []
 
     func begin() {
         if let session, session.state == .running || session.state == .notStarted { return }
@@ -16,8 +19,18 @@ final class RuntimeSession: NSObject {
     }
 
     func end() {
-        session?.invalidate()
-        session = nil
+        guard let session else { return }
+        self.session = nil
+        guard session.state == .running || session.state == .notStarted else { return }
+        ending.append(session)
+        session.invalidate()
+    }
+
+    private func didInvalidate(_ id: ObjectIdentifier) {
+        ending.removeAll { ObjectIdentifier($0) == id }
+        if let session, ObjectIdentifier(session) == id {
+            self.session = nil
+        }
     }
 }
 
@@ -33,9 +46,7 @@ extension RuntimeSession: WKExtendedRuntimeSessionDelegate {
     ) {
         let id = ObjectIdentifier(extendedRuntimeSession)
         Task { @MainActor in
-            if let session = self.session, ObjectIdentifier(session) == id {
-                self.session = nil
-            }
+            self.didInvalidate(id)
         }
     }
 }

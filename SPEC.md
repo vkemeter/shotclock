@@ -9,7 +9,7 @@ Shotclock nach WPA-Regeln beim Pool-Billard bereitstellt.
   eigene Zeit verantwortlich – kein Schiedsrichter-Modus, keine zwei Spieler.
 - **Kein Spielstand**, keine Rack-Zähler, keine Statistik.
 - Zielgerät: **Apple Watch Ultra** (Action-Taste), läuft aber auf jeder Watch mit
-  watchOS 26.
+  watchOS 27.
 - Vorerst nur für den Eigengebrauch; spätere App-Store-Veröffentlichung möglich, daher
   keine Abkürzungen, die eine Review blockieren würden.
 

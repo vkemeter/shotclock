@@ -24,12 +24,13 @@ final class ShotClockModel {
         clock.perform(action, at: .now)
         if isRunning {
             runtime.begin()
-            feedback.prepare()
+            feedback.activate()
             feedback.started()
             startLoop()
         } else {
             stopLoop()
             feedback.stopped()
+            feedback.deactivate()
             runtime.end()
         }
     }
@@ -51,7 +52,10 @@ final class ShotClockModel {
                 guard self.isRunning else {
                     self.loop = nil
                     try? await Task.sleep(for: Self.expiryGrace)
-                    if !self.isRunning { self.runtime.end() }
+                    if !self.isRunning {
+                        self.feedback.deactivate()
+                        self.runtime.end()
+                    }
                     return
                 }
                 try? await Task.sleep(for: Self.pollInterval)

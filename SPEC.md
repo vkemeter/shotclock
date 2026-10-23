@@ -67,12 +67,12 @@ ShotClockCore/          Swift-Paket: reine Logik, plattformunabhängig, getestet
   RuleSet               WPA-Zeiten
   ShotClock             Zustandsautomat (idle / running / paused / expired),
                         Verlängerung, Break-Bonus, Ereignisse (Warnung, Tick, Ablauf)
-ShotClock (Watch-App)   folgt, sobald Xcode installiert ist
-  ShotClockModel        @Observable, treibt ShotClock per Timer, löst Feedback aus
-  FeedbackService       Vibration (WKInterfaceDevice) und Töne
-  RuntimeService        hält die App im Hintergrund am Leben
-  ActionButtonIntent    App Intent für die Action-Taste
-  Views                 Uhr, Einstellungen
+ShotClock/              Watch-App (ShotClock.xcodeproj)
+  ShotClockModel        @Observable, treibt ShotClock per Update-Schleife, löst Feedback aus
+  FeedbackService       Vibration (WKInterfaceDevice) und erzeugte Töne (AVAudioPlayer)
+  RuntimeSession        hält die App im Hintergrund am Leben
+  ClockView             Uhr, Stopp, Verlängerung, Neues Rack, Break-Bonus
+  (folgt) ActionButtonIntent, Einstellungen
 ```
 
 ## Risiken / Spikes (nur auf echter Hardware prüfbar)
@@ -90,10 +90,10 @@ ShotClock (Watch-App)   folgt, sobald Xcode installiert ist
 ## Phasen
 
 1. ✅ Spezifikation
-2. ✅ `ShotClockCore` testgetrieben (24 Tests; `swift test` braucht ohne Xcode
-   `-Xswiftc -plugin-path -Xswiftc /Library/Developer/CommandLineTools/usr/lib/swift/host/plugins/testing`)
-3. ⏳ Xcode installieren, Watch-App-Projekt anlegen (nur Watch, ohne iOS-Companion)
-4. Spike Hintergrundbetrieb + Töne + Action-Taste auf der Ultra
+2. ✅ `ShotClockCore` testgetrieben (24 Tests)
+3. ✅ Watch-App-Projekt (nur Watch, ohne iOS-Companion), Prototyp mit Uhr, Vibration,
+   Tönen und `WKExtendedRuntimeSession`
+4. ⏳ Spike auf der Ultra: Hintergrundbetrieb + Töne, danach Action-Taste
 5. Hauptansicht, Feedback, Doppeltippen, Always-On
 6. Einstellungen (Belegung der Action-Taste), App-Icon, Barrierefreiheit
 7. Test am Tisch → ggf. TestFlight / App Store

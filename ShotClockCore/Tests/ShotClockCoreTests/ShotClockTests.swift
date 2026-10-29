@@ -230,3 +230,44 @@ struct ActionTests {
         #expect(clock.remaining(at: at(1)) == 59)
     }
 }
+
+@Suite("Eigene Regeln (Einstellungen)")
+struct CustomRulesTests {
+    @Test func idleShowsChangedShotTime() {
+        var clock = ShotClock()
+        clock.rules.shotTime = 45
+        #expect(clock.remaining(at: t0) == 45)
+    }
+
+    @Test func changeDuringShotKeepsRunningDeadline() {
+        var clock = ShotClock()
+        clock.start(at: t0)
+        clock.rules.shotTime = 60
+        #expect(clock.remaining(at: at(10)) == 20)
+        clock.start(at: at(10))
+        #expect(clock.remaining(at: at(10)) == 60)
+    }
+
+    @Test func moreExtensionsPerRack() {
+        var clock = ShotClock()
+        clock.rules.extensionsPerRack = 2
+        clock.start(at: t0)
+        let used = [1, 2, 3].map { clock.useExtension(at: at($0)) }
+        #expect(used == [true, true, false])
+    }
+
+    @Test func noExtensionsPerRack() {
+        var clock = ShotClock()
+        clock.rules.extensionsPerRack = 0
+        clock.start(at: t0)
+        #expect(!clock.canUseExtension)
+    }
+
+    @Test func ruleSetSurvivesEncoding() throws {
+        var rules = RuleSet.wpa
+        rules.shotTime = 40
+        rules.countdownFrom = 3
+        let data = try JSONEncoder().encode(rules)
+        #expect(try JSONDecoder().decode(RuleSet.self, from: data) == rules)
+    }
+}

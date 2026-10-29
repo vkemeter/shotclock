@@ -1,7 +1,7 @@
 import Foundation
 
 /// Time control of a shot clock.
-public struct RuleSet: Sendable, Equatable {
+public struct RuleSet: Sendable, Equatable, Codable {
     /// Time per shot.
     public var shotTime: TimeInterval
     /// Time added by one extension.

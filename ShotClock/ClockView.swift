@@ -36,6 +36,14 @@ struct ClockView: View {
 
                     Spacer()
 
+                    NavigationLink {
+                        SettingsView(model: model)
+                    } label: {
+                        Label("Einstellungen", systemImage: "gearshape")
+                    }
+
+                    Spacer()
+
                     Button("Verlängerung", systemImage: "plus.circle") {
                         model.perform(.useExtension)
                     }

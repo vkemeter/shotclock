@@ -31,7 +31,8 @@ public struct ShotClock: Sendable {
         case expired
     }
 
-    public let rules: RuleSet
+    /// Changes apply to the next start; a running shot keeps its deadline.
+    public var rules: RuleSet
     public private(set) var phase: Phase = .idle
     public private(set) var extensionsUsed = 0
     /// When set, the next `start` gets `RuleSet.breakBonus` on top; consumed by that start.

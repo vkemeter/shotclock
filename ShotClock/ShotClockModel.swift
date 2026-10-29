@@ -5,11 +5,13 @@ import ShotClockCore
 /// Drives the `ShotClock` in real time and turns its events into feedback.
 @Observable
 final class ShotClockModel {
-    private(set) var clock = ShotClock()
+    private(set) var clock = ShotClock(rules: ShotClockModel.loadRules())
 
     @ObservationIgnored private let feedback = FeedbackService()
     @ObservationIgnored private let runtime = RuntimeSession()
     @ObservationIgnored private var loop: Task<Void, Never>?
+
+    private static let rulesKey = "rules"
 
     /// Polling interval of the update loop; well below one second so ticks land on time.
     private static let pollInterval: Duration = .milliseconds(50)
@@ -33,6 +35,24 @@ final class ShotClockModel {
             feedback.deactivate()
             runtime.end()
         }
+    }
+
+    /// User-adjustable rules; persisted, applied from the next start on.
+    var rules: RuleSet {
+        get { clock.rules }
+        set {
+            clock.rules = newValue
+            if let data = try? JSONEncoder().encode(newValue) {
+                UserDefaults.standard.set(data, forKey: Self.rulesKey)
+            }
+        }
+    }
+
+    private static func loadRules() -> RuleSet {
+        guard let data = UserDefaults.standard.data(forKey: rulesKey),
+              let rules = try? JSONDecoder().decode(RuleSet.self, from: data)
+        else { return .wpa }
+        return rules
     }
 
     func newRack() {

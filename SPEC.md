@@ -50,6 +50,8 @@ Eingabewege:
 - Große Sekunden-Ziffern, Fortschrittsring: grün → gelb (≤ 10 s) → rot (≤ 5 s)
 - Zeigt an, ob die Verlängerung im Rack noch verfügbar ist und ob der Break-Bonus aktiv ist
 - Always-On-Display: Restzeit bleibt im gedimmten Modus lesbar
+- VoiceOver: Die Uhr liest Restzeit, Verlängerungs- und Break-Bonus-Status vor; der
+  Break-Bonus-Schalter meldet „an“/„aus“
 
 ## Nicht-funktionale Anforderungen
 
@@ -96,6 +98,7 @@ ShotClock/              Watch-App (ShotClock.xcodeproj)
 4. ✅ Spike auf der Ultra: Hintergrundbetrieb (`WKExtendedRuntimeSession` reicht) + Töne
    (auch im Stummmodus hörbar)
 5. ✅ Hauptansicht, Feedback, Always-On
-6. ⏳ Einstellungen ✅, App-Icon ✅, Barrierefreiheit. Action-Taste verworfen: Die App
+6. ✅ Einstellungen, App-Icon, Barrierefreiheit (VoiceOver nennt Restzeit, Verlängerung und
+   Break-Bonus; Dynamic Type; „Bewegung reduzieren“). Action-Taste verworfen: Die App
    erscheint ohne echtes Training nicht unter „Action-Taste › Training“; kein Must-have.
 7. Test am Tisch → ggf. TestFlight / App Store

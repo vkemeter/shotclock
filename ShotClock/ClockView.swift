@@ -15,6 +15,8 @@ struct ClockView: View {
                 .buttonStyle(.plain)
                 .handGestureShortcut(.primaryAction)
                 .accessibilityLabel(model.isRunning ? "Neustart" : "Start")
+                .accessibilityValue(Self.accessibilityStatus(of: model.clock, at: context.date))
+                .accessibilityAddTraits(.updatesFrequently)
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -27,6 +29,8 @@ struct ClockView: View {
                         model.toggleBreakBonus()
                     }
                     .tint(model.clock.isBreakBonusArmed ? .yellow : nil)
+                    .accessibilityValue(model.clock.isBreakBonusArmed ? "an" : "aus")
+                    .accessibilityHint("Der nächste Start bekommt Bonuszeit.")
                 }
                 ToolbarItemGroup(placement: .bottomBar) {
                     Button("Stopp", systemImage: "stop.fill") {
@@ -52,6 +56,27 @@ struct ClockView: View {
             }
         }
     }
+
+    /// Spoken summary of what the clock face shows only visually.
+    private static func accessibilityStatus(of clock: ShotClock, at now: Date) -> String {
+        var parts: [String] = []
+        if clock.phase == .expired {
+            parts.append("Zeit abgelaufen")
+        } else {
+            let remaining = seconds(Int(clock.remaining(at: now).rounded(.up)))
+            parts.append(clock.phase == .idle ? remaining : "noch " + remaining)
+        }
+        let isExtensionAvailable = clock.extensionsUsed < clock.rules.extensionsPerRack
+        parts.append(isExtensionAvailable ? "Verlängerung verfügbar" : "Verlängerung verbraucht")
+        if clock.isBreakBonusArmed {
+            parts.append("Break-Bonus aktiv")
+        }
+        return parts.joined(separator: ", ")
+    }
+
+    private static func seconds(_ value: Int) -> String {
+        value == 1 ? "1 Sekunde" : "\(value) Sekunden"
+    }
 }
 
 private struct ClockFace: View {
@@ -59,6 +84,7 @@ private struct ClockFace: View {
     let now: Date
 
     @Environment(\.isLuminanceReduced) private var isLuminanceReduced
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var remaining: TimeInterval { clock.remaining(at: now) }
 
@@ -94,13 +120,12 @@ private struct ClockFace: View {
                         .monospacedDigit()
                         .lineLimit(1)
                         .minimumScaleFactor(0.5)
-                        .contentTransition(.numericText(countsDown: true))
+                        .contentTransition(reduceMotion ? .identity : .numericText(countsDown: true))
                 }
                 Text("EXT")
                     .font(.caption2.bold())
                     .strikethrough(!isExtensionAvailable)
                     .foregroundStyle(isExtensionAvailable ? AnyShapeStyle(.green) : AnyShapeStyle(.secondary))
-                    .accessibilityLabel(isExtensionAvailable ? "Verlängerung verfügbar" : "Verlängerung verbraucht")
             }
             .padding(.horizontal, 16)
         }

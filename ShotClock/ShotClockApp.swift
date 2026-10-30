@@ -8,12 +8,12 @@ struct ShotClockApp: App {
         WindowGroup {
             ClockView(model: model)
                 #if DEBUG
-                .task {
-                    // Lets the simulator show a running clock without interaction.
-                    if ProcessInfo.processInfo.arguments.contains("-autostart") {
-                        model.perform(.startOrRestart)
+                    .task {
+                        // Lets the simulator show a running clock without interaction.
+                        if ProcessInfo.processInfo.arguments.contains("-autostart") {
+                            model.perform(.startOrRestart)
+                        }
                     }
-                }
                 #endif
         }
     }

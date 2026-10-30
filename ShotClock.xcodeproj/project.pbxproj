@@ -96,9 +96,10 @@
 				};
 			};
 			buildConfigurationList = AA0000000000000000000090 /* Build configuration list for PBXProject "ShotClock" */;
-			developmentRegion = de;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				en,
 				de,
 				Base,
 			);

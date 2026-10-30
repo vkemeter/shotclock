@@ -15,6 +15,16 @@ public struct RuleSet: Sendable, Equatable, Codable {
     /// Remaining seconds from which every second is announced (audible countdown).
     public var countdownFrom: Int
 
+    /// Creates a time control. All times are in seconds.
+    ///
+    /// - Parameters:
+    ///   - shotTime: Time per shot.
+    ///   - extensionTime: Time added by one extension.
+    ///   - extensionsPerRack: Extensions available per rack.
+    ///   - breakBonus: Extra time for the first shot after the break.
+    ///   - warningAt: Remaining time at which the haptic warning is issued.
+    ///   - countdownFrom: Remaining seconds from which every second is announced; 0 turns
+    ///     the countdown off.
     public init(
         shotTime: TimeInterval,
         extensionTime: TimeInterval,

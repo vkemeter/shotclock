@@ -5,7 +5,7 @@ let package = Package(
     name: "ShotClockCore",
     platforms: [.watchOS("27.0"), .macOS(.v26)],
     products: [
-        .library(name: "ShotClockCore", targets: ["ShotClockCore"]),
+        .library(name: "ShotClockCore", targets: ["ShotClockCore"])
     ],
     targets: [
         .target(name: "ShotClockCore"),

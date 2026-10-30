@@ -111,7 +111,7 @@ enum Tone {
 
         let samples = buffer.floatChannelData![0]
         let count = Int(frameCount)
-        let fade = max(1, min(count / 2, Int(sampleRate / 100))) // 10 ms fade against clicks
+        let fade = max(1, min(count / 2, Int(sampleRate / 100)))  // 10 ms fade against clicks
         for i in 0..<count {
             let envelope = min(1, Double(min(i, count - 1 - i)) / Double(fade))
             samples[i] = Float(sin(2 * .pi * frequency * Double(i) / sampleRate) * envelope * 0.9)

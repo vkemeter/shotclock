@@ -2,8 +2,9 @@ import WatchKit
 
 /// Keeps the app running while the wrist is down, so haptics and tones arrive on time.
 ///
-/// Spike: uses a `WKExtendedRuntimeSession` (background mode `physical-therapy`,
-/// max. ~1 h). If this proves unreliable on the device, switch to `HKWorkoutSession`.
+/// Uses a `WKExtendedRuntimeSession` (background mode `physical-therapy`, max. 1 h per
+/// session; one session spans start to stop/expiry). No session type fits a shot clock
+/// exactly; if App Review objects, switch to `HKWorkoutSession`.
 final class RuntimeSession: NSObject {
     private var session: WKExtendedRuntimeSession?
     /// Invalidated sessions are retained until the system confirms the invalidation;

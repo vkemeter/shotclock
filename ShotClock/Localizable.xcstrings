@@ -1,0 +1,399 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "%lld": {
+      "shouldTranslate": false
+    },
+    "%lld s": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld s"
+          }
+        }
+      }
+    },
+    "%lld seconds": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld second"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld seconds"
+                }
+              }
+            }
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Sekunde"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Sekunden"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld seconds remaining": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld second remaining"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld seconds remaining"
+                }
+              }
+            }
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "noch %lld Sekunde"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "noch %lld Sekunden"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld times": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "once"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld times"
+                }
+              }
+            }
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "einmal"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld-mal"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld×": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld×"
+          }
+        }
+      }
+    },
+    "Break bonus": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Break-Bonus"
+          }
+        }
+      }
+    },
+    "Break bonus active": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Break-Bonus aktiv"
+          }
+        }
+      }
+    },
+    "Changes apply from the next start.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Änderungen gelten ab dem nächsten Start."
+          }
+        }
+      }
+    },
+    "Duration": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dauer"
+          }
+        }
+      }
+    },
+    "EXT": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "EXT"
+          }
+        }
+      }
+    },
+    "Extension": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verlängerung"
+          }
+        }
+      }
+    },
+    "Extension available": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verlängerung verfügbar"
+          }
+        }
+      }
+    },
+    "Extension used": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verlängerung verbraucht"
+          }
+        }
+      }
+    },
+    "New rack": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neues Rack"
+          }
+        }
+      }
+    },
+    "None": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "keine"
+          }
+        }
+      }
+    },
+    "Off": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "aus"
+          }
+        }
+      }
+    },
+    "On": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "an"
+          }
+        }
+      }
+    },
+    "Per rack": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pro Rack"
+          }
+        }
+      }
+    },
+    "Restart": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neustart"
+          }
+        }
+      }
+    },
+    "Settings": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einstellungen"
+          }
+        }
+      }
+    },
+    "Shot time": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stoßzeit"
+          }
+        }
+      }
+    },
+    "Signals": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Signale"
+          }
+        }
+      }
+    },
+    "Start": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start"
+          }
+        }
+      }
+    },
+    "Stop": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stopp"
+          }
+        }
+      }
+    },
+    "TIME": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TIME"
+          }
+        }
+      }
+    },
+    "The next start gets bonus time.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der nächste Start bekommt Bonuszeit."
+          }
+        }
+      }
+    },
+    "Time is up": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeit abgelaufen"
+          }
+        }
+      }
+    },
+    "Tones from": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Töne ab"
+          }
+        }
+      }
+    },
+    "Vibrate at": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vibration bei"
+          }
+        }
+      }
+    },
+    "WPA default": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "WPA-Standard"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

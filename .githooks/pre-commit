@@ -1,0 +1,26 @@
+#!/bin/sh
+# Lints the staged version of every staged Swift file with swift-format (config: .swift-format).
+# Enable once per clone: git config core.hooksPath .githooks
+# Skip in an emergency:  git commit --no-verify
+
+files=$(git diff --cached --name-only --diff-filter=ACMR -- '*.swift')
+[ -z "$files" ] && exit 0
+
+swift_format=$(xcrun --find swift-format 2>/dev/null || command -v swift-format)
+if [ -z "$swift_format" ]; then
+    echo "pre-commit: swift-format not found (comes with Xcode 16 or newer)." >&2
+    exit 1
+fi
+
+failed=""
+for file in $files; do
+    git show ":$file" | "$swift_format" lint --strict --assume-filename "$file" - || failed="$failed $file"
+done
+
+if [ -n "$failed" ]; then
+    echo >&2
+    echo "pre-commit: swift-format found issues. Fix them with:" >&2
+    echo "  xcrun swift-format format -i$failed" >&2
+    echo "then stage the changes again." >&2
+    exit 1
+fi

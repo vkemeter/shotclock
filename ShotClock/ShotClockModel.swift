@@ -50,7 +50,7 @@ final class ShotClockModel {
 
     private static func loadRules() -> RuleSet {
         guard let data = UserDefaults.standard.data(forKey: rulesKey),
-              let rules = try? JSONDecoder().decode(RuleSet.self, from: data)
+            let rules = try? JSONDecoder().decode(RuleSet.self, from: data)
         else { return .wpa }
         return rules
     }

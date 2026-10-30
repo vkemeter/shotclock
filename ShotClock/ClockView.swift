@@ -14,26 +14,26 @@ struct ClockView: View {
                 }
                 .buttonStyle(.plain)
                 .handGestureShortcut(.primaryAction)
-                .accessibilityLabel(model.isRunning ? "Neustart" : "Start")
+                .accessibilityLabel(model.isRunning ? Text("Restart") : Text("Start"))
                 .accessibilityValue(Self.accessibilityStatus(of: model.clock, at: context.date))
                 .accessibilityAddTraits(.updatesFrequently)
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Neues Rack", systemImage: "arrow.counterclockwise") {
+                    Button("New rack", systemImage: "arrow.counterclockwise") {
                         model.newRack()
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Break-Bonus", systemImage: model.clock.isBreakBonusArmed ? "bolt.fill" : "bolt") {
+                    Button("Break bonus", systemImage: model.clock.isBreakBonusArmed ? "bolt.fill" : "bolt") {
                         model.toggleBreakBonus()
                     }
                     .tint(model.clock.isBreakBonusArmed ? .yellow : nil)
-                    .accessibilityValue(model.clock.isBreakBonusArmed ? "an" : "aus")
-                    .accessibilityHint("Der nächste Start bekommt Bonuszeit.")
+                    .accessibilityValue(model.clock.isBreakBonusArmed ? Text("On") : Text("Off"))
+                    .accessibilityHint(Text("The next start gets bonus time."))
                 }
                 ToolbarItemGroup(placement: .bottomBar) {
-                    Button("Stopp", systemImage: "stop.fill") {
+                    Button("Stop", systemImage: "stop.fill") {
                         model.perform(.stop)
                     }
                     .disabled(model.clock.phase == .idle)
@@ -43,12 +43,12 @@ struct ClockView: View {
                     NavigationLink {
                         SettingsView(model: model)
                     } label: {
-                        Label("Einstellungen", systemImage: "gearshape")
+                        Label("Settings", systemImage: "gearshape")
                     }
 
                     Spacer()
 
-                    Button("Verlängerung", systemImage: "plus.circle") {
+                    Button("Extension", systemImage: "plus.circle") {
                         model.perform(.useExtension)
                     }
                     .disabled(!model.clock.canUseExtension)
@@ -61,21 +61,23 @@ struct ClockView: View {
     private static func accessibilityStatus(of clock: ShotClock, at now: Date) -> String {
         var parts: [String] = []
         if clock.phase == .expired {
-            parts.append("Zeit abgelaufen")
+            parts.append(String(localized: "Time is up"))
         } else {
-            let remaining = seconds(Int(clock.remaining(at: now).rounded(.up)))
-            parts.append(clock.phase == .idle ? remaining : "noch " + remaining)
+            let seconds = Int(clock.remaining(at: now).rounded(.up))
+            parts.append(
+                clock.phase == .idle
+                    ? String(localized: "\(seconds) seconds")
+                    : String(localized: "\(seconds) seconds remaining"))
         }
         let isExtensionAvailable = clock.extensionsUsed < clock.rules.extensionsPerRack
-        parts.append(isExtensionAvailable ? "Verlängerung verfügbar" : "Verlängerung verbraucht")
+        parts.append(
+            isExtensionAvailable
+                ? String(localized: "Extension available")
+                : String(localized: "Extension used"))
         if clock.isBreakBonusArmed {
-            parts.append("Break-Bonus aktiv")
+            parts.append(String(localized: "Break bonus active"))
         }
         return parts.joined(separator: ", ")
-    }
-
-    private static func seconds(_ value: Int) -> String {
-        value == 1 ? "1 Sekunde" : "\(value) Sekunden"
     }
 }
 

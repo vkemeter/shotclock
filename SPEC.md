@@ -57,6 +57,8 @@ Eingabewege:
 
 - **Läuft weiter, wenn das Handgelenk unten ist.** Vibration und Töne kommen auch dann
   pünktlich. Das ist die wichtigste technische Anforderung.
+- **Sprache:** folgt der Sprache der Uhr; Englisch (Basis, auch Fallback) und Deutsch
+  (`Localizable.xcstrings`).
 - **Genauigkeit:** Die Restzeit wird immer aus dem Endzeitpunkt berechnet, nicht durch
   Herunterzählen. Abweichung < 0,1 s.
 - **Töne trotz Stummmodus?** Muss am Gerät geprüft werden (siehe Risiken).

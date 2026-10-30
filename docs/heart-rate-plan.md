@@ -1,117 +1,130 @@
-# Plan: Pulsmessung mit Workout-Sitzung
+# Plan: Pulsmessung mit Workout-Sitzung (Version 1.1)
 
-Status: **Entwurf, nicht umgesetzt.** Grundlage für die Entscheidung, ob und wie die App
-von `WKExtendedRuntimeSession` (`physical-therapy`) auf `HKWorkoutSession` umgestellt wird.
+Status: **Plan vollständig, nicht umgesetzt.** Die App stellt von `WKExtendedRuntimeSession`
+(`physical-therapy`) auf `HKWorkoutSession` um. Der Puls wird während des Trainings
+aufgezeichnet und mit dem Training in Apple Health gespeichert.
+
+## Entscheidungen
+
+| Datum | Entscheidung |
+|---|---|
+| 2026-10-30 | **Immer Workout.** Jede Nutzung der Shotclock läuft als Workout-Sitzung; kein separater Modus „nur Uhr“. |
+| 2026-10-30 | **Verlauf nur in Health.** Keine eigene Auswertung, keine Zusammenfassung, kein Verlauf in der App. Den Pulsverlauf zeigen Health bzw. Fitness. |
+| 2026-10-30 | **Keine Live-Anzeige des Pulses** (Platz auf der Uhr). Der Puls wird nur aufgezeichnet. |
+| 2026-10-30 | **Verweigerte Health-Freigabe → Hinweis** statt Ausweichen auf `physical-therapy`. Der Modus `physical-therapy` fällt komplett weg. |
+| 2026-10-30 | **Trainingsende: Knopf + Nachfrage + Automatik** (wie bei Lauf- und Wandertraining der Apple-Trainings-App), siehe [Trainingsende](#trainingsende). |
 
 ## Ziel
 
-Beim Shotclock-Training soll sichtbar werden, wie der Körper auf Zeitdruck reagiert. Der
-Puls wird während des Trainings gemessen, live angezeigt und **dauerhaft gespeichert**:
-als Training in Apple Health (sichtbar in der Fitness-App auf dem iPhone) und mit
-Auswertungen pro Stoß in der App.
+- Die Uhr läuft bei gesenktem Arm zuverlässig weiter, ohne 1-Stunden-Grenze und mit einem
+  Hintergrundmodus, der zum Zweck passt (Sporttraining).
+- Jedes Training erscheint in Apple Health mit Dauer und Pulsverlauf.
+- An der Bedienung der Uhr ändert sich so wenig wie möglich.
 
-## Warum das gleichzeitig das Hintergrund-Problem löst
+## Vergleich
 
-| | `physical-therapy` (heute) | `HKWorkoutSession` (Plan) |
+| | `physical-therapy` (heute) | `HKWorkoutSession` (1.1) |
 |---|---|---|
 | Läuft bei gesenktem Arm | ja | ja |
 | Zeitlimit | 1 h pro Sitzung | keins |
 | Passt zum Zweck (Richtlinie 2.5.4) | Grauzone | Sporttraining – gut begründbar |
-| Puls | nein | ja, live über `HKLiveWorkoutBuilder` |
+| Puls in Health | nein | ja |
 | Action-Taste › Training | nein | möglich (`StartWorkoutIntent`) |
-| Nachteile | – | HealthKit-Freigabe, Pulssensor kostet Akku, Trainingssymbol in der Uhr, Datenschutzerklärung muss HealthKit nennen |
+| Nachteile | – | Health-Freigabe nötig, Pulssensor kostet Akku, Trainingssymbol auf der Uhr, Datenschutzerklärung muss Health nennen |
 
 ## Technische Grundlage (HealthKit)
 
-- **Capability** HealthKit → Entitlement `com.apple.developer.healthkit`
-- **Info.plist:** `NSHealthShareUsageDescription` (Puls lesen),
-  `NSHealthUpdateUsageDescription` (Training speichern); beide lokalisiert über
-  `InfoPlist.xcstrings`
-- **Hintergrundmodus:** `workout-processing` statt `physical-therapy`
+- **Capability** HealthKit → Entitlement `com.apple.developer.healthkit`. Eine Freigabe
+  durch Apple ist dafür nicht nötig; geprüft wird im normalen App Review.
+- **Info.plist:**
+  - `NSHealthUpdateUsageDescription` – Trainings in Health speichern
+  - `NSHealthShareUsageDescription` – Puls lesen
+  - beide lokalisiert (Englisch/Deutsch) über `InfoPlist.xcstrings`
+- **Hintergrundmodus:** `workout-processing` ersetzt `physical-therapy`.
 - **Freigabe:** `HKHealthStore.requestAuthorization(toShare: [workoutType], read: [heartRate])`
+  beim ersten Start.
 - **Sitzung:** `HKWorkoutSession` + `associatedWorkoutBuilder()` mit
-  `HKLiveWorkoutDataSource`; Puls kommt über
-  `workoutBuilder(_:didCollectDataOf:)` → `statistics(for: .heartRate)`
-- **Trainingsart:** HealthKit kennt kein Billard. `.other` ist die ehrliche Wahl; der
-  Name „Billard-Training“ lässt sich über `HKMetadataKeyWorkoutBrandName` mitgeben (vor
-  der Umsetzung prüfen, wie Fitness das anzeigt).
-- **Stöße im Training:** jeder Stoß wird als `HKWorkoutEvent` vom Typ `.segment` mit
-  `DateInterval` (Start → Ende) und Metadaten (Verlängerung genutzt, abgelaufen) an den
-  Builder gehängt. Health kennt damit die Stoßgrenzen; der Pulsverlauf lässt sich später
-  jedem Stoß zuordnen.
+  `HKLiveWorkoutDataSource`. Die Datenquelle sammelt den Puls automatisch; die App liest
+  ihn nicht aus und zeigt ihn nicht an.
+- **Trainingsart:** HealthKit kennt kein Billard → `.other`. Ob sich über Metadaten (z. B.
+  `HKMetadataKeyWorkoutBrandName`) ein Name wie „Billard-Training“ in Fitness anzeigen
+  lässt, wird bei der Umsetzung geprüft.
 - **Ende:** `session.end()` → `builder.endCollection(at:)` → `builder.finishWorkout()`
-  speichert das Training in Health.
+  speichert das Training mit allen Pulswerten in Health.
 
-## Ablauf in der App (Vorschlag)
+## Health-Freigabe
 
-Heute gibt es keine „Sitzung“: Die Uhr läuft pro Stoß. Ein Workout braucht dagegen einen
-klaren Anfang und ein Ende. Vorschlag nach dem Muster der Apple-Trainings-App:
+| Nutzer erlaubt | Verhalten |
+|---|---|
+| Training speichern + Puls lesen | Alles funktioniert. |
+| Training speichern, Puls nicht | Workout läuft, Training wird ohne Puls gespeichert. Kein Hinweis nötig; HealthKit verrät der App aus Datenschutzgründen ohnehin nicht, ob das Lesen erlaubt wurde. |
+| Training speichern abgelehnt | Keine Workout-Sitzung möglich. Die App zeigt statt der Uhr einen **Hinweis**: Shotclock braucht die Freigabe, damit die Uhr bei gesenktem Arm weiterläuft, und wo man sie erteilt (Einstellungen › Health auf der Uhr bzw. Health-App auf dem iPhone). Beim nächsten Öffnen prüft die App erneut. |
 
-1. **Startbildschirm:** „Training starten“ (zusätzlich zur heutigen Shotclock ohne
-   Aufzeichnung, siehe offene Fragen).
-2. **Während des Trainings:** die bekannte Uhr, zusätzlich klein der aktuelle Puls
-   (♥ 112) und die Trainingsdauer. Nach links wischen: Seite mit „Beenden“.
-3. **Nach dem Training:** Zusammenfassung – Dauer, Stöße, abgelaufene Stöße, Ø-/Max-Puls,
-   Puls in den letzten 5 Sekunden vor dem Stoß im Vergleich zum Ruhepuls zwischen den
-   Stößen.
-4. **Verlauf:** Liste früherer Trainings auf der Uhr (lokal, SwiftData); die
-   vollständigen Pulsdaten liegen in Health.
-
-## Auswertung, die für Billard-Spieler interessant ist
-
-- Ø-Puls pro Stoß und Pulsanstieg vom Start bis zum Stoß
-- Puls in der Warnphase (≤ 10 s) und in der Countdown-Phase (≤ 5 s)
-- Abgelaufene Stöße und genutzte Verlängerungen im Verhältnis zum Puls
-- Entwicklung über mehrere Trainings: Wird der Pulsanstieg unter Zeitdruck kleiner?
-
-Die Auswertung ist reine Rechnerei über Zeitstempel und Pulswerte und gehört deshalb in
-`ShotClockCore` (testbar ohne Uhr). HealthKit bleibt in der App-Schicht hinter einem
-Protokoll, damit die Logik mit erfundenen Pulsreihen getestet werden kann.
+Status abfragen: `healthStore.authorizationStatus(for: .workoutType())` (`.sharingDenied`).
 
 ## Architektur
 
 ```
-ShotClockCore
-  ShotRecord        Start, Ende, Ergebnis (gestoppt/abgelaufen), Verlängerung genutzt
-  TrainingLog       sammelt ShotRecords einer Sitzung
-  HeartRateStats    ordnet Pulswerte Stößen und Phasen zu, berechnet Kennzahlen
 ShotClock (App)
-  WorkoutSession    ersetzt RuntimeSession: HKWorkoutSession + HKLiveWorkoutBuilder
-  HealthAuthorization  Freigabe anfragen, Ablehnung behandeln
-  TrainingSummaryView, HistoryView
+  WorkoutSession        ersetzt RuntimeSession: HKWorkoutSession + HKLiveWorkoutBuilder,
+                        Start, Ende, Speichern in Health
+  HealthAccess          Freigabe anfragen, Status prüfen
+  HealthAccessView      Hinweis bei verweigerter Freigabe
+  ShotClockModel        steuert das Training statt der Runtime-Session
+ShotClockCore
+  TrainingIdleMonitor   Leerlauf, Nachfrage, automatisches Ende, Endzeitpunkt (testbar)
 ```
+
+`ShotClockCore` bleibt frei von HealthKit. Die App hält Training und Uhr getrennt: Das
+Training läuft über viele Stöße, die Uhr startet und stoppt pro Stoß.
 
 ## Phasen
 
-1. **Core:** `ShotRecord`, `TrainingLog`, `HeartRateStats` testgetrieben
-2. **Workout-Sitzung:** `WorkoutSession` statt `RuntimeSession`, Freigabe, Hintergrundmodus
-   `workout-processing`; auf der Uhr prüfen, dass Töne/Vibration weiter pünktlich kommen
-3. **Live-Puls** in der Uhr anzeigen
-4. **Stöße als Segmente** an das Workout hängen, Training in Health speichern
-5. **Zusammenfassung** nach dem Training
-6. **Verlauf** auf der Uhr (SwiftData)
-7. **Store:** Datenschutzerklärung um HealthKit ergänzen, Prüfnotiz anpassen,
-   App-Datenschutz-Angaben prüfen; optional Action-Taste über `StartWorkoutIntent`
+1. **Projekt:** HealthKit-Capability, Usage-Texte (lokalisiert), Hintergrundmodus
+   `workout-processing` statt `physical-therapy`
+2. **Freigabe:** Anfrage beim ersten Start, `HealthAccessView` bei Ablehnung
+3. **Trainingsende-Logik:** `TrainingIdleMonitor` in `ShotClockCore`, testgetrieben
+4. **Workout-Sitzung:** `WorkoutSession` ersetzt `RuntimeSession`; Training beginnt mit
+   dem ersten Start; Knopf „Training beenden“, Nachfrage-Dialog, Automatik; Speichern in
+   Health
+5. **Test auf der Uhr:** Töne und Vibration bei gesenktem Arm, Training mit Pulsverlauf in
+   Health/Fitness, Nachfrage und Automatik, Akkuverbrauch über ein längeres Training,
+   Verhalten bei Ablehnung
+6. **Doku und Store:** `privacy.md` und `support.md` um Health ergänzen,
+   `app-store-metadata.md` (Beschreibung, Prüfnotiz, App-Datenschutz), SPEC, README
+7. **Optional später:** Action-Taste über `StartWorkoutIntent`; Stöße als
+   `HKWorkoutEvent`-Segmente im Training
 
 ## Store-Regeln, die dabei gelten
 
 - **5.1.3 Gesundheit:** Gesundheitsdaten nicht für Werbung oder Data-Mining nutzen, nicht
-  an Dritte weitergeben, keine Gesundheitsdaten in iCloud ablegen. Die App braucht eine
-  Datenschutzerklärung, die HealthKit nennt.
-- **Keine medizinischen Aussagen:** keine „Stressmessung“ oder Diagnose versprechen;
-  „Puls während des Trainings“ ist unproblematisch.
-- **Ablehnung der Freigabe:** Die App muss weiter funktionieren (Shotclock ohne Puls).
+  an Dritte weitergeben, nicht in iCloud ablegen. Die Datenschutzerklärung muss HealthKit
+  nennen.
+- **App-Datenschutz-Angaben:** Bleiben die Daten auf dem Gerät bzw. in Health, gilt
+  weiterhin „Keine Daten erfasst“ – vor der Einreichung noch einmal prüfen.
+- **Keine medizinischen Aussagen** in App und Store-Texten.
+- **Hinweis bei Ablehnung:** muss erklären, wozu die Freigabe dient, und darf den Nutzer
+  nicht bedrängen.
 
-## Offene Fragen an dich
+## Trainingsende
 
-1. **Immer mit Workout oder wählbar?** Variante A: Jede Nutzung ist ein Training. Variante B:
-   „Training“ (mit Puls, gespeichert) und „Spiel“ (nur Uhr). Bei B braucht „Spiel“
-   weiterhin einen Hintergrundmodus – entweder ebenfalls ein Workout ohne Speichern oder
-   weiter `physical-therapy` (dann bleibt die Grauzone).
-2. **Was passiert bei verweigerter Health-Freigabe?** Ohne Freigabe für `workoutType`
-   startet keine Workout-Sitzung. Fallback wäre `physical-therapy` (beide Modi lassen sich
-   deklarieren) oder ein Hinweis, die Freigabe zu erteilen.
-3. **Verlauf auf der Uhr oder nur Health?** Health/Fitness zeigt Puls und Dauer, aber
-   keine Stoß-Auswertung. Eine eigene Auswertung braucht den Verlauf in der App – oder
-   später eine iPhone-App mit mehr Platz.
-4. **Welche Kennzahlen sind dir als Spieler am wichtigsten?** (siehe Liste oben)
+Ein Training läuft über viele Stöße. Es beginnt mit dem ersten Start und endet auf einem
+von drei Wegen:
+
+1. **Knopf „Training beenden“** in den Einstellungen (die Hauptansicht bleibt unverändert).
+2. **Nachfrage nach 10 Minuten ohne Start:** Die Uhr vibriert und fragt „Training
+   beendet?“ mit **Beenden** und **Weiter**. „Weiter“ setzt die Wartezeit zurück.
+3. **Automatik als Sicherheitsnetz:** Kommt 5 Minuten nach der Nachfrage keine Antwort
+   (also 15 Minuten ohne Start), endet das Training von selbst.
+
+Bei 2 und 3 wird das Training auf das **Ende des letzten Stoßes zurückdatiert**, damit die
+Leerlaufzeit nicht als Trainingszeit in Health landet.
+
+Läuft gerade ein Stoß, wird nicht nachgefragt. Die Zeiten (10 / 5 Minuten) sind
+Startwerte und lassen sich nach dem Test am Tisch anpassen.
+
+**Technik:** Während eines Workouts holt watchOS die App beim Anheben des Arms in den
+Vordergrund. Die Nachfrage ist deshalb ein normaler Dialog in der App mit Vibration
+(`WKInterfaceDevice.play(.notification)`) – es braucht **keine Mitteilungs-Freigabe**.
+Die Zeitlogik (Leerlauf messen, Nachfrage fällig, Automatik fällig, Endzeitpunkt) ist reine
+Rechnerei und kommt testgetrieben als `TrainingIdleMonitor` in `ShotClockCore`.

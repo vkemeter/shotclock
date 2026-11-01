@@ -77,15 +77,15 @@ sich mit `-AppleLanguages "(de)"` erzwingen.
 ```sh
 xcodebuild -project ShotClock.xcodeproj -scheme ShotClock \
   -destination 'id=<WATCH-UDID>' -derivedDataPath build/device \
-  DEVELOPMENT_TEAM=<TEAM-ID> -allowProvisioningUpdates build
+  -allowProvisioningUpdates build
 
 xcrun devicectl device install app --device <WATCH-UDID> \
   build/device/Build/Products/Debug-watchos/ShotClock.app
-xcrun devicectl device process launch --device <WATCH-UDID> de.vkemeter.shotclock
+xcrun devicectl device process launch --device <WATCH-UDID> de.vkemeter.shotclock.watchkitapp
 ```
 
-Die UDID der Uhr liefert `xcrun devicectl list devices`. Mit einem kostenlosen
-Personal Team läuft die Signatur nach 7 Tagen ab; danach neu installieren.
+Die UDID der Uhr liefert `xcrun devicectl list devices`. Das Team (`DEVELOPMENT_TEAM`)
+ist im Projekt gesetzt.
 
 ## Code-Stil
 
@@ -126,6 +126,12 @@ Texte im Code als englische Literale schreiben (`Text("Shot time")`,
 ## Veröffentlichung
 
 TestFlight und App Store: Texte, Pflichtangaben und Prüfnotizen stehen in
-[docs/app-store-metadata.md](docs/app-store-metadata.md). Ablauf: Team-ID setzen →
-*Product › Archive* (Ziel „Any watchOS Device“) → im Organizer zu App Store Connect
-hochladen → Build in TestFlight freigeben.
+[docs/app-store-metadata.md](docs/app-store-metadata.md). Ablauf: *Product › Archive*
+(Ziel „Any watchOS Device“) → im Organizer zu App Store Connect hochladen → Build in
+TestFlight freigeben.
+
+Der App Store nimmt Watch-Apps nur in einer iOS-Hülle an. Deshalb gibt es neben der
+Watch-App (`ShotClock`, `de.vkemeter.shotclock.watchkitapp`) das Target
+`ShotClockContainer` (`de.vkemeter.shotclock`, ohne Code), das die Watch-App einbettet.
+Das Schema baut die Hülle nur beim Archivieren; Ausführen und Testen betreffen nur die
+Watch-App. Version und Build-Nummer stehen auf Projektebene und gelten für beide.

@@ -8,7 +8,7 @@ halten sie ein.
 
 | Feld | Wert |
 |---|---|
-| Bundle-ID | `de.vkemeter.shotclock` |
+| Bundle-ID | `de.vkemeter.shotclock` (Hülle; die Watch-App selbst ist `de.vkemeter.shotclock.watchkitapp`) |
 | SKU | `shotclock-watch` |
 | Plattform | watchOS (eigenständige Watch-App, keine iPhone-App) |
 | Primäre Kategorie | Sport |

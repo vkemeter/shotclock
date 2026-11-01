@@ -10,13 +10,27 @@
             buildForTesting = "YES"
             buildForRunning = "YES"
             buildForProfiling = "YES"
-            buildForArchiving = "YES"
+            buildForArchiving = "NO"
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "AA0000000000000000000060"
                BuildableName = "ShotClock.app"
                BlueprintName = "ShotClock"
+               ReferencedContainer = "container:ShotClock.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "NO"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "AA0000000000000000000106"
+               BuildableName = "ShotClockContainer.app"
+               BlueprintName = "ShotClockContainer"
                ReferencedContainer = "container:ShotClock.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
